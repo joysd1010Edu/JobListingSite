@@ -1,9 +1,9 @@
-import React from 'react'
+//=== Imports ===
+import HomePage from "@/PageComponent/HomePage/HomePage";
 
+//=== Home Page Route ===
 const page = () => {
-  return (
-    <div>page</div>
-  )
-}
+  return <HomePage />;
+};
 
-export default page
+export default page;
