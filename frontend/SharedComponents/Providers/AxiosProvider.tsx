@@ -94,7 +94,13 @@ export const AxiosProvider: React.FC<AxiosProviderProps> = ({
         }
 
         //=== Handle 401 Unauthorized ===
-        if (error.response?.status === 401) {
+        //=== Skip redirect for auth endpoints (login/signup) ===
+        const requestUrl = error.config?.url || "";
+        const isAuthRequest =
+          requestUrl.includes("/auth/login") ||
+          requestUrl.includes("/auth/signup");
+
+        if (error.response?.status === 401 && !isAuthRequest) {
           if (error.config._retry) {
             localStorage.removeItem("user");
             localStorage.removeItem("accessToken");

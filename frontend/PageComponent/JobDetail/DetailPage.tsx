@@ -101,7 +101,8 @@ const DetailPage = () => {
       toast.success(
         `Application submitted for ${job?.title} at ${job?.company}!`,
       );
-    } catch {
+    } catch(error) {
+      console.error("Application submission error:", error);
       toast.error("Failed to submit application. Please try again.");
     }
   };

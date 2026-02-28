@@ -112,6 +112,7 @@ const createJob = async (req, res) => {
       tags,
       postedBy: req.user._id,
     });
+    console.log("Job created:", job);
 
     res.status(201).json({
       success: true,
@@ -197,6 +198,7 @@ const applyToJob = async (req, res) => {
         });
     }
 
+
     const { name, email, resumeLink, coverNote } = req.body;
 
     // === Add application ===
@@ -210,7 +212,7 @@ const applyToJob = async (req, res) => {
     });
 
     await job.save();
-
+    console.log(`User ${req.user._id} applied to job ${job._id}`);
     res.status(201).json({
       success: true,
       message: `Application submitted for ${job.title} at ${job.company}!`,

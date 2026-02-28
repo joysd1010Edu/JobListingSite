@@ -118,6 +118,7 @@ export const JobProvider: React.FC<{ children: ReactNode }> = ({
     application: JobApplicationData,
   ) => {
     await axios.post(`/jobs/${id}/apply`, application);
+    
     //=== Optimistically update the local state ===
     setJobs((prev) =>
       prev.map((job) =>

@@ -157,8 +157,17 @@ const validateApplication = [
     .trim()
     .notEmpty()
     .withMessage("Resume link is required")
-    .isURL({ protocols: ["http", "https"] })
-    .withMessage("Please enter a valid URL"),
+    .custom((value) => {
+      try {
+        const url = new URL(value);
+        if (!["http:", "https:"].includes(url.protocol)) {
+          throw new Error("URL must use http or https");
+        }
+        return true;
+      } catch {
+        throw new Error("Please enter a valid URL");
+      }
+    }),
   body("coverNote")
     .trim()
     .notEmpty()
