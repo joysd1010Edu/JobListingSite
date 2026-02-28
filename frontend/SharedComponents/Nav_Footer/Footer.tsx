@@ -1,19 +1,18 @@
 //=== Imports ===
-import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 
 //=== Footer Links Data ===
 const footerLinks = {
   company: [
-    { label: "About Us", href: "/about" },
-    { label: "Contact", href: "/contact" },
-    { label: "Careers", href: "/careers" },
+    { label: "About Us", href: "/" },
+    { label: "Contact", href: "/" },
+    { label: "Careers", href: "/" },
   ],
   resources: [
-    { label: "Blog", href: "/blog" },
-    { label: "Help Center", href: "/help" },
-    { label: "FAQ", href: "/faq" },
+    { label: "Blog", href: "/" },
+    { label: "Help Center", href: "/" },
+    { label: "FAQ", href: "/" },
   ],
 };
 

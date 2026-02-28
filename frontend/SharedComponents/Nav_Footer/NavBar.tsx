@@ -18,7 +18,7 @@ const NavBar = () => {
   return (
     <nav className="w-full bg-white/95 backdrop-blur-md sticky top-0 z-50 border-b border-[#D6DDEB]/50 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
       <div className="site-container">
-        <div className="flex items-center justify-between h-[72px]">
+        <div className="flex items-center justify-between h-18">
           {/* === Logo & Navigation Links === */}
           <div className="flex items-center gap-12">
             {/* === Logo === */}
@@ -26,12 +26,10 @@ const NavBar = () => {
               <Image
                 src="/Images/logo.png"
                 alt="QuickHire Logo"
-                width={32}
+                width={200}
                 height={32}
               />
-              <span className="text-xl font-bold text-[#25324B]">
-                QuickHire
-              </span>
+              
             </Link>
 
             {/* === Desktop Navigation Links === */}
