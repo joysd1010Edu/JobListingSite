@@ -1,7 +1,7 @@
 "use client";
 
 //=== Imports ===
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Plus,
   Trash2,
@@ -107,8 +107,13 @@ const CopyButton = ({ text, label }: { text: string; label: string }) => {
 //=== Admin Panel Component ===
 const AdminPanel = () => {
   //=== Context Hooks ===
-  const { jobs, addJob, deleteJob } = useJobs();
+  const { jobs, isLoading, addJob, deleteJob, fetchAdminJobs } = useJobs();
   const { user, logout } = useAuth();
+
+  //=== Fetch admin jobs with applicants on mount ===
+  useEffect(() => {
+    fetchAdminJobs();
+  }, [fetchAdminJobs]);
 
   //=== Modal States ===
   const [showAddModal, setShowAddModal] = useState(false);
@@ -156,7 +161,7 @@ const AdminPanel = () => {
   };
 
   //=== Handle Add Job Submit ===
-  const handleAddJob = (e: React.FormEvent) => {
+  const handleAddJob = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError("");
 
@@ -177,8 +182,13 @@ const AdminPanel = () => {
       return;
     }
 
-    addJob(newJob);
-    toast.success(`"${newJob.title}" has been added successfully!`);
+    try {
+      await addJob(newJob);
+      toast.success(`"${newJob.title}" has been added successfully!`);
+    } catch {
+      toast.error("Failed to add job. Please try again.");
+      return;
+    }
 
     //=== Reset Form ===
     setNewJob({
@@ -201,11 +211,15 @@ const AdminPanel = () => {
   };
 
   //=== Handle Delete Confirm ===
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     const job = jobs.find((j) => j.id === id);
-    deleteJob(id);
+    try {
+      await deleteJob(id);
+      toast.success(`"${job?.title}" has been deleted`);
+    } catch {
+      toast.error("Failed to delete job. Please try again.");
+    }
     setDeleteConfirmId(null);
-    toast.success(`"${job?.title}" has been deleted`);
   };
 
   //=== Get applicants job ===
@@ -300,7 +314,14 @@ const AdminPanel = () => {
           </div>
 
           {/* === Table Body === */}
-          {jobs.length > 0 ? (
+          {isLoading ? (
+            <div className="flex items-center justify-center py-16">
+              <div className="text-center">
+                <div className="w-10 h-10 border-4 border-[#4640DE] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                <p className="text-[#7C8493]">Loading jobs...</p>
+              </div>
+            </div>
+          ) : jobs.length > 0 ? (
             jobs.map((job) => (
               <div
                 key={job.id}

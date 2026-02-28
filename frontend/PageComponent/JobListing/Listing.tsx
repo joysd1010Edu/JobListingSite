@@ -54,7 +54,7 @@ const Listing = () => {
   const [showTypeDropdown, setShowTypeDropdown] = useState(false);
 
   //=== Jobs Context ===
-  const { jobs } = useJobs();
+  const { jobs, isLoading } = useJobs();
 
   //=== Filtered Jobs (Memoized) ===
   const filteredJobs = useMemo(() => {
@@ -278,7 +278,14 @@ const Listing = () => {
         </div>
 
         {/* === Jobs Grid === */}
-        {filteredJobs.length > 0 ? (
+        {isLoading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center">
+              <div className="w-10 h-10 border-4 border-[#4640DE] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+              <p className="text-[#7C8493]">Loading jobs...</p>
+            </div>
+          </div>
+        ) : filteredJobs.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredJobs.map((job) => (
               <Link

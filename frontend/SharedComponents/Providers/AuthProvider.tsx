@@ -9,35 +9,12 @@ import React, {
   type ReactNode,
 } from "react";
 import { useRouter } from "next/navigation";
+import { useAxios } from "@/Hooks/useAxios";
 import type {
   AuthContextType,
   User,
   AuthState,
 } from "@/Type/Authentication/Login";
-
-//=== Test User Credentials (for demo purposes) ===
-const TEST_USERS: { email: string; password: string; user: User }[] = [
-  {
-    email: "admin@quickhire.com",
-    password: "admin123",
-    user: {
-      id: "1",
-      name: "Admin User",
-      email: "admin@quickhire.com",
-      role: "admin",
-    },
-  },
-  {
-    email: "user@quickhire.com",
-    password: "user123",
-    user: {
-      id: "2",
-      name: "Test User",
-      email: "user@quickhire.com",
-      role: "user",
-    },
-  },
-];
 
 //=== Auth Context ===
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -47,6 +24,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const router = useRouter();
+  const axios = useAxios();
 
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
@@ -56,19 +34,32 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   //=== Initialize Auth State from Storage ===
   useEffect(() => {
-    const initializeAuth = () => {
+    const initializeAuth = async () => {
       try {
-        const userFromLocalStorage = localStorage.getItem("user");
-        const userFromSessionStorage = sessionStorage.getItem("user");
-        const storedUser = userFromLocalStorage || userFromSessionStorage;
+        const token = localStorage.getItem("accessToken");
+        const storedUser =
+          localStorage.getItem("user") || sessionStorage.getItem("user");
 
-        if (storedUser) {
-          const user = JSON.parse(storedUser);
-          setAuthState({
-            user,
-            isAuthenticated: true,
-            isLoading: false,
-          });
+        if (token && storedUser) {
+          // === Verify token with server ===
+          try {
+            const response = await axios.get("/auth/me");
+            const user = response.data.data.user;
+            setAuthState({
+              user,
+              isAuthenticated: true,
+              isLoading: false,
+            });
+          } catch {
+            // === Token invalid, clear storage ===
+            localStorage.removeItem("user");
+            localStorage.removeItem("accessToken");
+            setAuthState({
+              user: null,
+              isAuthenticated: false,
+              isLoading: false,
+            });
+          }
         } else {
           setAuthState({
             user: null,
@@ -87,105 +78,119 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     };
 
     initializeAuth();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  //=== Login Function (Mock - uses test credentials) ===
+  //=== Login Function ===
   const login = async (email: string, password: string) => {
     try {
       setAuthState((prev) => ({ ...prev, isLoading: true }));
 
-      //=== Simulate API delay ===
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      const response = await axios.post("/auth/login", { email, password });
 
-      //=== Find matching test user ===
-      const matchedUser = TEST_USERS.find(
-        (u) => u.email === email && u.password === password,
-      );
-
-      if (!matchedUser) {
+      if (!response.data.success) {
         setAuthState((prev) => ({ ...prev, isLoading: false }));
-        throw new Error("Invalid email or password");
+        throw new Error(response.data.message || "Login failed");
       }
 
-      const signedUserData = matchedUser.user;
+      const { user, token } = response.data.data;
 
-      //=== Store user data ===
-      localStorage.setItem("user", JSON.stringify(signedUserData));
-      localStorage.setItem(
-        "accessToken",
-        `mock-access-token-${signedUserData.id}`,
-      );
-      localStorage.setItem(
-        "refreshToken",
-        `mock-refresh-token-${signedUserData.id}`,
-      );
+      //=== Store user data & token ===
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("accessToken", token);
 
       //=== Set Cookies for Middleware ===
-      document.cookie = `accessToken=mock-access-token-${signedUserData.id}; path=/; SameSite=Lax`;
+      document.cookie = `accessToken=${token}; path=/; SameSite=Lax`;
       document.cookie = `userData=${encodeURIComponent(
-        JSON.stringify(signedUserData),
+        JSON.stringify(user),
       )}; path=/; SameSite=Lax`;
 
       setAuthState({
-        user: signedUserData,
+        user,
         isAuthenticated: true,
         isLoading: false,
       });
 
       //=== Redirect Based on Role ===
-      if (signedUserData.role === "admin") {
+      if (user.role === "admin") {
         router.push("/admin");
       } else {
         router.push("/jobs");
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Login error:", error);
       setAuthState((prev) => ({ ...prev, isLoading: false }));
+
+      // === Extract message from Axios error ===
+      if (
+        error &&
+        typeof error === "object" &&
+        "response" in error &&
+        error.response &&
+        typeof error.response === "object" &&
+        "data" in error.response
+      ) {
+        const axiosError = error as {
+          response: { data: { message?: string } };
+        };
+        throw new Error(axiosError.response.data.message || "Login failed");
+      }
       throw error;
     }
   };
 
-  //=== Signup Function (Mock) ===
+  //=== Signup Function ===
   const signup = async (name: string, email: string, password: string) => {
     try {
       setAuthState((prev) => ({ ...prev, isLoading: true }));
 
-      //=== Simulate API delay ===
-      await new Promise((resolve) => setTimeout(resolve, 800));
-
-      //=== Check if email already exists ===
-      const exists = TEST_USERS.find((u) => u.email === email);
-      if (exists) {
-        setAuthState((prev) => ({ ...prev, isLoading: false }));
-        throw new Error("Email already registered");
-      }
-
-      //=== Create new user (mock) ===
-      const newUser: User = {
-        id: Date.now().toString(),
+      const response = await axios.post("/auth/signup", {
         name,
         email,
-        role: "user",
-      };
+        password,
+      });
 
-      localStorage.setItem("user", JSON.stringify(newUser));
-      localStorage.setItem("accessToken", `mock-access-token-${newUser.id}`);
+      if (!response.data.success) {
+        setAuthState((prev) => ({ ...prev, isLoading: false }));
+        throw new Error(response.data.message || "Signup failed");
+      }
 
-      document.cookie = `accessToken=mock-access-token-${newUser.id}; path=/; SameSite=Lax`;
+      const { user, token } = response.data.data;
+
+      //=== Store user data & token ===
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("accessToken", token);
+
+      //=== Set Cookies ===
+      document.cookie = `accessToken=${token}; path=/; SameSite=Lax`;
       document.cookie = `userData=${encodeURIComponent(
-        JSON.stringify(newUser),
+        JSON.stringify(user),
       )}; path=/; SameSite=Lax`;
 
       setAuthState({
-        user: newUser,
+        user,
         isAuthenticated: true,
         isLoading: false,
       });
 
       router.push("/jobs");
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Signup error:", error);
       setAuthState((prev) => ({ ...prev, isLoading: false }));
+
+      if (
+        error &&
+        typeof error === "object" &&
+        "response" in error &&
+        error.response &&
+        typeof error.response === "object" &&
+        "data" in error.response
+      ) {
+        const axiosError = error as {
+          response: { data: { message?: string } };
+        };
+        throw new Error(axiosError.response.data.message || "Signup failed");
+      }
       throw error;
     }
   };

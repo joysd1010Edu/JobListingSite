@@ -1,7 +1,7 @@
 "use client";
 
 //=== Imports ===
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -40,9 +40,16 @@ const tagColors: Record<string, string> = {
 const DetailPage = () => {
   const params = useParams();
   const router = useRouter();
-  const { getJobById, applyToJob } = useJobs();
+  const { getJobById, applyToJob, isLoading, fetchJobs } = useJobs();
   const jobId = params?.id as string;
   const job = getJobById(jobId);
+
+  //=== Fetch jobs if not loaded yet (direct navigation) ===
+  useEffect(() => {
+    if (!job && !isLoading) {
+      fetchJobs();
+    }
+  }, [job, isLoading, fetchJobs]);
 
   //=== Application Form State ===
   const [formData, setFormData] = useState<JobApplicationData>({
@@ -62,7 +69,7 @@ const DetailPage = () => {
   };
 
   //=== Handle Application Submit ===
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError("");
 
@@ -87,13 +94,29 @@ const DetailPage = () => {
       return;
     }
 
-    //=== Simulate Submission ===
-    applyToJob(jobId, formData);
-    setSubmitted(true);
-    toast.success(
-      `Application submitted for ${job?.title} at ${job?.company}!`,
-    );
+    //=== Submit Application ===
+    try {
+      await applyToJob(jobId, formData);
+      setSubmitted(true);
+      toast.success(
+        `Application submitted for ${job?.title} at ${job?.company}!`,
+      );
+    } catch {
+      toast.error("Failed to submit application. Please try again.");
+    }
   };
+
+  //=== Loading State ===
+  if (isLoading) {
+    return (
+      <section className="min-h-[calc(100vh-72px)] bg-gradient-to-b from-[#F8F8FD] to-white flex items-center justify-center px-4 page-transition">
+        <div className="text-center animate-fade-in-up">
+          <div className="w-10 h-10 border-4 border-[#4640DE] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-[#7C8493]">Loading job details...</p>
+        </div>
+      </section>
+    );
+  }
 
   //=== Job Not Found State ===
   if (!job) {
