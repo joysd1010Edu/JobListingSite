@@ -101,7 +101,7 @@ const LatestJobCard = ({ job }: { job: LatestJobType }) => {
   };
 
   return (
-    <div className="bg-white rounded-sm p-5 border border-[#D6DDEB]">
+    <div className="bg-white rounded-xl p-5 border border-[#D6DDEB] hover:shadow-md hover:border-[#4640DE]/20 transition-all duration-300">
       {/* === Company Logo Placeholder === */}
       <div
         className="w-12 h-12 rounded-lg flex items-center justify-center text-base font-bold mb-4"

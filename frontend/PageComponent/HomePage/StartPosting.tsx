@@ -25,10 +25,10 @@ const StartPosting = () => {
         }}
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
+      <div className="site-container py-16 lg:py-20">
         <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
           {/* === Text Content === */}
-          <div className="flex-1 z-10 text-center lg:text-left">
+          <div className="flex-1 z-10 text-center lg:text-left animate-fade-in-up">
             {/* === Section Heading === */}
             <h2 className="text-3xl sm:text-4xl lg:text-[48px] font-bold text-white leading-tight">
               Start posting
@@ -44,7 +44,7 @@ const StartPosting = () => {
             {/* === CTA Button === */}
             <Link
               href="/signup"
-              className="inline-block mt-8 px-8 py-4 border-2 border-white text-white font-bold text-base hover:bg-white hover:text-[#4640DE] transition-colors"
+              className="inline-block mt-8 px-8 py-4 rounded-lg border-2 border-white text-white font-bold text-base hover:bg-white hover:text-[#4640DE] hover:shadow-lg transition-all duration-300"
             >
               Sign Up For Free
             </Link>

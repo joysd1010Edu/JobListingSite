@@ -15,7 +15,7 @@ const companies = [
 const CompaniesStrip = () => {
   return (
     <section className="py-10 lg:py-12 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="site-container">
         {/* === Section Label === */}
         <p className="text-[#7C8493] text-base lg:text-lg mb-8">
           Companies we helped grow

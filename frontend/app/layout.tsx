@@ -4,6 +4,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import NavBar from "@/SharedComponents/Nav_Footer/NavBar";
 import Footer from "@/SharedComponents/Nav_Footer/Footer";
+import { ClientProviders } from "@/SharedComponents/Providers/ClientProviders";
+import { Toaster } from "@/components/ui/sonner";
 
 //=== Font Configuration ===
 const geistSans = Geist({
@@ -37,14 +39,20 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {/* === Navigation Bar === */}
-        <NavBar />
+        {/* === Providers Wrapper === */}
+        <ClientProviders>
+          {/* === Navigation Bar === */}
+          <NavBar />
 
-        {/* === Page Content === */}
-        {children}
+          {/* === Page Content === */}
+          <main className="min-h-screen">{children}</main>
 
-        {/* === Footer === */}
-        <Footer />
+          {/* === Footer === */}
+          <Footer />
+
+          {/* === Toast Notifications === */}
+          <Toaster />
+        </ClientProviders>
       </body>
     </html>
   );

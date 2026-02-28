@@ -105,7 +105,7 @@ const featuredJobs = [
 const FeaturedJobs = () => {
   return (
     <section className="hidden md:block py-12 lg:py-16 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="site-container">
         {/* === Section Header === */}
         <div className="flex items-center justify-between mb-10">
           {/* === Section Title === */}
@@ -142,7 +142,7 @@ const FeaturedJobCard = ({ job }: { job: JobType }) => {
   const logo = logoColors[job.company] || { bg: "#6366F1", text: "#FFFFFF" };
 
   return (
-    <div className="border border-[#D6DDEB] rounded-sm p-6 hover:shadow-lg transition-shadow cursor-pointer group">
+    <div className="border border-[#D6DDEB] rounded-xl p-6 hover-lift cursor-pointer group bg-white">
       {/* === Card Header (Logo + Job Type Badge) === */}
       <div className="flex items-center justify-between mb-5">
         {/* === Company Logo Placeholder === */}

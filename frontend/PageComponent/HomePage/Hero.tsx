@@ -17,10 +17,10 @@ const Hero = () => {
         <div className="absolute inset-12 lg:inset-20 border-[1.5px] border-[#E0DAFF] rounded-2xl transform rotate-[4deg] opacity-25" />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
+      <div className="site-container py-10 lg:py-16">
         <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
           {/* === Hero Text Content === */}
-          <div className="flex-1 z-10 w-full lg:w-auto">
+          <div className="flex-1 z-10 w-full lg:w-auto animate-fade-in-up">
             {/* === Main Heading === */}
             <h1 className="text-[38px] sm:text-[52px] lg:text-[64px] font-bold text-[#25324B] leading-[1.1] tracking-tight">
               Discover
@@ -125,7 +125,7 @@ const Hero = () => {
           </div>
 
           {/* === Hero Person Image (Desktop Only) === */}
-          <div className="hidden lg:flex flex-1 justify-end relative z-10">
+          <div className="hidden lg:flex flex-1 justify-end relative z-10 animate-slide-in-right">
             <Image
               src="/Images/person.png"
               alt="Job seeker pointing"

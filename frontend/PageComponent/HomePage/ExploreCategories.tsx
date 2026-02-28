@@ -29,7 +29,7 @@ const categories = [
 const ExploreCategories = () => {
   return (
     <section className="py-12 lg:py-16 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="site-container">
         {/* === Section Header === */}
         <div className="flex items-center justify-between mb-10">
           {/* === Section Title === */}
@@ -85,7 +85,7 @@ const CategoryCard = ({ category }: { category: CategoryType }) => {
   return (
     <Link
       href={`/jobs/${category.name.toLowerCase().replace(" ", "-")}`}
-      className={`group p-8 rounded-sm border transition-all duration-300 cursor-pointer ${
+      className={`group p-8 rounded-xl border transition-all duration-300 cursor-pointer hover-lift ${
         isHighlighted
           ? "bg-[#4640DE] border-[#4640DE] text-white"
           : "bg-white border-[#D6DDEB] hover:bg-[#4640DE] hover:border-[#4640DE] hover:text-white"
@@ -147,7 +147,7 @@ const CategoryListItem = ({ category }: { category: CategoryType }) => {
   return (
     <Link
       href={`/jobs/${category.name.toLowerCase().replace(" ", "-")}`}
-      className="flex items-center gap-4 p-4 border border-[#D6DDEB] rounded-sm hover:border-[#4640DE] transition-colors"
+      className="flex items-center gap-4 p-4 border border-[#D6DDEB] rounded-xl hover:border-[#4640DE] hover:shadow-md transition-all duration-300"
     >
       {/* === Category Icon === */}
       <div className="w-12 h-12 flex items-center justify-center bg-[#F0EFFF] rounded-lg flex-shrink-0">
